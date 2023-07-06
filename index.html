@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!--====== Required meta tags ======-->
+  <meta charset="utf-8" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge" />
+  <meta name="description" content="" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+  <!--====== Title ======-->
+  <title>Green Scan</title>
+
+  <!--====== Favicon Icon ======-->
+  <link rel="icon" href="assets/images/logo/favicon.png" type="image/png" />
+
+  <!--====== Bootstrap css ======-->
+  <link rel="stylesheet" href="assets/css/bootstrap.min.css" />
+
+  <!--====== Line Icons css ======-->
+  <link rel="stylesheet" href="assets/css/lineicons.css" />
+
+  <!--====== Tiny Slider css ======-->
+  <link rel="stylesheet" href="assets/css/tiny-slider.css" />
+
+  <!--====== gLightBox css ======-->
+  <link rel="stylesheet" href="assets/css/glightbox.min.css" />
+
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
+  <style>
+    .popup {
+      position: fixed;
+      left: 0;
+      top: 0;
+      height: 100%;
+      z-index: 1000;
+      width: 100%;
+      background-color: rgba(94, 110, 141, 0.9);
+      opacity: 0;
+      visibility: hidden;
+      transition: 500ms all;
+
+    }
+
+    .popup.is-visible {
+      opacity: 1;
+      visibility: visible;
+      transition: 1s all;
+    }
+
+    .popup-container {
+      transform: translateY(-50%);
+      transition: 500ms all;
+      position: relative;
+      width: 200px;
+      max-width: 80%;
+      margin: 2em auto;
+      top: 5%;
+      border-radius: .25em .25em .4em .4em;
+      text-align: center;
+    }
+
+    .is-visible .popup-container {
+      transform: translateY(0);
+      transition: 500ms all;
+    }
+
+    .frame {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 400px;
+      height: 400px;
+      margin-top: 0px;
+      margin-left: -200px;
+      border-radius: 2px;
+      box-shadow: 1px 2px 10px 0px rgba(0, 0, 0, 0.3);
+      background: #3a92af;
+      background: linear-gradient(to top right, #3a92af 0%, #5ca05a 100%);
+      filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#3A92AF", endColorstr="#5CA05A", GradientType=1);
+      color: #fff;
+      font-family: "Open Sans", Helvetica, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .center {
+      position: absolute;
+      width: 300px;
+      height: 260px;
+      top: 70px;
+      left: 50px;
+      background: #fff;
+      box-shadow: 8px 10px 15px 0 rgba(0, 0, 0, 0.2);
+      border-radius: 3px;
+    }
+
+    .title {
+      font-size: 16px;
+      color: #676767;
+      line-height: 50px;
+      height: 50px;
+      border-bottom: 1px solid #d8d8d8;
+      text-align: center;
+    }
+
+    .dropzone {
+      position: absolute;
+      z-index: 1;
+      box-sizing: border-box;
+      display: table;
+      table-layout: fixed;
+      width: 100px;
+      height: 80px;
+      top: 86px;
+      left: 100px;
+      border: 1px dashed #a4a4a4;
+      border-radius: 3px;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .dropzone.is-dragover {
+      border-color: #666;
+      background: #eee;
+    }
+
+    .dropzone .content {
+      display: table-cell;
+      vertical-align: middle;
+    }
+
+    .dropzone .upload {
+      margin: 6px 0 0 2px;
+    }
+
+    .dropzone .filename {
+      display: block;
+      color: #676767;
+      font-size: 14px;
+      line-height: 18px;
+    }
+
+    .dropzone .input {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      opacity: 0;
+    }
+
+    .upload-btn {
+      position: absolute;
+      width: 140px;
+      height: 40px;
+      left: 80px;
+      bottom: 24px;
+      background: #6ece3b;
+      border-radius: 3px;
+      text-align: center;
+      line-height: 40px;
+      font-size: 14px;
+      box-shadow: 0 2px 0 0 #498c25;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+    }
+
+    .upload-btn:hover {
+      box-shadow: 0 2px 0 0 #498c25, 0 2px 10px 0 #6ece3b;
+    }
+
+    .bar {
+      position: absolute;
+      z-index: 1;
+      width: 300px;
+      height: 3px;
+      top: 49px;
+      left: 0;
+      background: #6ece3b;
+      transition: all 3s ease-out;
+      transform: scaleX(0);
+      transform-origin: 0 0;
+    }
+
+    .bar.active {
+      transform: scaleX(1) translate3d(0, 0, 0);
+    }
+
+    .syncing {
+      position: absolute;
+      top: 109px;
+      left: 134px;
+      opacity: 0;
+    }
+
+    .syncing.active {
+      -webkit-animation: syncing 3.2s ease-in-out;
+      animation: syncing 3.2s ease-in-out;
+    }
+
+    .done {
+      position: absolute;
+      top: 112px;
+      left: 132px;
+      opacity: 0;
+    }
+
+    .done.active {
+      -webkit-animation: done 0.5s ease-in 3.2s;
+      animation: done 0.5s ease-in 3.2s;
+      -webkit-animation-fill-mode: both;
+      animation-fill-mode: both;
+    }
+
+    @-webkit-keyframes syncing {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      10% {
+        opacity: 1;
+      }
+
+      90% {
+        opacity: 1;
+      }
+
+      100% {
+        transform: rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    @keyframes syncing {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      10% {
+        opacity: 1;
+      }
+
+      90% {
+        opacity: 1;
+      }
+
+      100% {
+        transform: rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    @-webkit-keyframes done {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes done {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- popup -->
+  <div class="popup" role="alert">
+    <div class="popup-container">
+      <div>
+        <div class="frame">
+          <div class="center">
+            <div class="bar"></div>
+            <div class="title">Drop file to upload</div>
+            <div class="dropzone">
+              <div class="content">
+                <img src="https://100dayscss.com/codepen/upload.svg" class="upload">
+                <span class="filename"></span>
+                <input type="file" class="input">
+              </div>
+            </div>
+            <img src="https://100dayscss.com/codepen/syncing.svg" class="syncing">
+            <img src="https://100dayscss.com/codepen/checkmark.svg" class="done">
+            <div class="upload-btn">Upload file</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--====== NAVBAR NINE PART START ======-->
+
+  <section class="navbar-area navbar-nine">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+          <nav class="navbar navbar-expand-lg">
+            <a class="navbar-brand" href="index.html">
+              <img src="assets/images/logo/logo.png" alt="Logo" />
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNine"
+              aria-controls="navbarNine" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="toggler-icon"></span>
+              <span class="toggler-icon"></span>
+              <span class="toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse sub-menu-bar" id="navbarNine">
+              <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                  <a class="page-scroll active" href="#hero-area">Home</a>
+                </li>
+                <li class="nav-item">
+                  <a class="page-scroll" href="#services">About</a>
+                </li>
+
+                <li class="nav-item">
+                  <a class="page-scroll" href="#sample">Samples</a>
+                </li>
+                <li class="nav-item">
+                  <a class="page-scroll" href="#teams">Teams</a>
+                </li>
+                <li class="nav-item">
+                  <a class="page-scroll" href="#report">Report</a>
+                </li>
+              </ul>
+            </div>
+
+            <div class="navbar-btn d-none d-lg-inline-block">
+              <a class="menu-bar" href="#side-menu-left"><i class="lni lni-menu"></i></a>
+            </div>
+          </nav>
+          <!-- navbar -->
+        </div>
+      </div>
+      <!-- row -->
+    </div>
+    <!-- container -->
+  </section>
+
+  <!--====== NAVBAR NINE PART ENDS ======-->
+
+  <!--====== SIDEBAR PART START ======-->
+
+  <div class="sidebar-left">
+    <div class="sidebar-close">
+      <a class="close" href="#close"><i class="lni lni-close"></i></a>
+    </div>
+    <div class="sidebar-content">
+      <div class="sidebar-logo">
+        <a href="index.html"><img src="assets/images/logo/logo.png" alt="Logo" /></a>
+      </div>
+      <!-- <p class="text">Lorem ipsum dolor sit amet adipisicing elit. Sapiente fuga nisi rerum iusto intro.</p> -->
+      <!-- logo -->
+      <div class="sidebar-menu">
+        <h5 class="menu-title">Quick Links</h5>
+        <ul>
+          <li><a href="javascript:void(0)">About Us</a></li>
+          <li><a href="javascript:void(0)">Our Team</a></li>
+        </ul>
+      </div>
+      <!-- menu -->
+      <div class="sidebar-social align-items-center justify-content-center">
+        <h5 class="social-title">Follow Us On</h5>
+        <ul>
+          <li>
+            <a href="javascript:void(0)"><i class="lni lni-facebook-filled"></i></a>
+          </li>
+          <li>
+            <a href="javascript:void(0)"><i class="lni lni-twitter-original"></i></a>
+          </li>
+          <li>
+            <a href="javascript:void(0)"><i class="lni lni-linkedin-original"></i></a>
+          </li>
+        </ul>
+      </div>
+      <!-- sidebar social -->
+    </div>
+    <!-- content -->
+  </div>
+  <div class="overlay-left"></div>
+
+  <!--====== SIDEBAR PART ENDS ======-->
+
+  <!-- Start header Area -->
+  <section id="hero-area" class="header-area header-eight">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6 col-md-12 col-12">
+          <div class="header-content">
+            <h1>Green Scan: Plant Disease Detector</h1>
+            <p>
+              Empowering Farmers with Precision: Detecting Plant Diseases for Maximum Productivity.
+            </p>
+            <div class="button">
+              <a href="#" class="btn primary-btn popup-trigger" onclick="popupOpen();">Get Started</a>
+              <a href="https://www.youtube.com/watch?v=r44RKWyfcFw&fbclid=IwAR21beSJORalzmzokxDRcGfkZA1AtRTE__l5N4r09HcGS5Y6vOluyouM9EM"
+                class="glightbox video-button">
+                <span class="btn icon-btn rounded-full">
+                  <i class="lni lni-play"></i>
+                </span>
+                <span class="text">Watch Demo</span>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6 col-md-12 col-12">
+          <div class="header-image">
+            <img src="assets/images/header/home-image.jpg" alt="#" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- End header Area -->
+
+  <!--====== ABOUT FIVE PART START ======-->
+
+  <section class="about-area about-five">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6 col-12">
+          <div class="about-image-five">
+            <svg class="shape" width="106" height="134" viewBox="0 0 106 134" fill="none"
+              xmlns="http://www.w3.org/2000/svg">
+              <circle cx="1.66654" cy="1.66679" r="1.66667" fill="#DADADA" />
+              <circle cx="1.66654" cy="16.3335" r="1.66667" fill="#DADADA" />
+              <circle cx="1.66654" cy="31.0001" r="1.66667" fill="#DADADA" />
+              <circle cx="1.66654" cy="45.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="1.66654" cy="60.3335" r="1.66667" fill="#DADADA" />
+              <circle cx="1.66654" cy="88.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="1.66654" cy="117.667" r="1.66667" fill="#DADADA" />
+              <circle cx="1.66654" cy="74.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="1.66654" cy="103" r="1.66667" fill="#DADADA" />
+              <circle cx="1.66654" cy="132" r="1.66667" fill="#DADADA" />
+              <circle cx="16.3333" cy="1.66679" r="1.66667" fill="#DADADA" />
+              <circle cx="16.3333" cy="16.3335" r="1.66667" fill="#DADADA" />
+              <circle cx="16.3333" cy="31.0001" r="1.66667" fill="#DADADA" />
+              <circle cx="16.3333" cy="45.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="16.333" cy="60.3335" r="1.66667" fill="#DADADA" />
+              <circle cx="16.333" cy="88.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="16.333" cy="117.667" r="1.66667" fill="#DADADA" />
+              <circle cx="16.333" cy="74.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="16.333" cy="103" r="1.66667" fill="#DADADA" />
+              <circle cx="16.333" cy="132" r="1.66667" fill="#DADADA" />
+              <circle cx="30.9998" cy="1.66679" r="1.66667" fill="#DADADA" />
+              <circle cx="74.6665" cy="1.66679" r="1.66667" fill="#DADADA" />
+              <circle cx="30.9998" cy="16.3335" r="1.66667" fill="#DADADA" />
+              <circle cx="74.6665" cy="16.3335" r="1.66667" fill="#DADADA" />
+              <circle cx="30.9998" cy="31.0001" r="1.66667" fill="#DADADA" />
+              <circle cx="74.6665" cy="31.0001" r="1.66667" fill="#DADADA" />
+              <circle cx="30.9998" cy="45.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="74.6665" cy="45.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="31" cy="60.3335" r="1.66667" fill="#DADADA" />
+              <circle cx="74.6668" cy="60.3335" r="1.66667" fill="#DADADA" />
+              <circle cx="31" cy="88.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="74.6668" cy="88.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="31" cy="117.667" r="1.66667" fill="#DADADA" />
+              <circle cx="74.6668" cy="117.667" r="1.66667" fill="#DADADA" />
+              <circle cx="31" cy="74.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="74.6668" cy="74.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="31" cy="103" r="1.66667" fill="#DADADA" />
+              <circle cx="74.6668" cy="103" r="1.66667" fill="#DADADA" />
+              <circle cx="31" cy="132" r="1.66667" fill="#DADADA" />
+              <circle cx="74.6668" cy="132" r="1.66667" fill="#DADADA" />
+              <circle cx="45.6665" cy="1.66679" r="1.66667" fill="#DADADA" />
+              <circle cx="89.3333" cy="1.66679" r="1.66667" fill="#DADADA" />
+              <circle cx="45.6665" cy="16.3335" r="1.66667" fill="#DADADA" />
+              <circle cx="89.3333" cy="16.3335" r="1.66667" fill="#DADADA" />
+              <circle cx="45.6665" cy="31.0001" r="1.66667" fill="#DADADA" />
+              <circle cx="89.3333" cy="31.0001" r="1.66667" fill="#DADADA" />
+              <circle cx="45.6665" cy="45.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="89.3333" cy="45.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="45.6665" cy="60.3335" r="1.66667" fill="#DADADA" />
+              <circle cx="89.3333" cy="60.3335" r="1.66667" fill="#DADADA" />
+              <circle cx="45.6665" cy="88.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="89.3333" cy="88.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="45.6665" cy="117.667" r="1.66667" fill="#DADADA" />
+              <circle cx="89.3333" cy="117.667" r="1.66667" fill="#DADADA" />
+              <circle cx="45.6665" cy="74.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="89.3333" cy="74.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="45.6665" cy="103" r="1.66667" fill="#DADADA" />
+              <circle cx="89.3333" cy="103" r="1.66667" fill="#DADADA" />
+              <circle cx="45.6665" cy="132" r="1.66667" fill="#DADADA" />
+              <circle cx="89.3333" cy="132" r="1.66667" fill="#DADADA" />
+              <circle cx="60.3333" cy="1.66679" r="1.66667" fill="#DADADA" />
+              <circle cx="104" cy="1.66679" r="1.66667" fill="#DADADA" />
+              <circle cx="60.3333" cy="16.3335" r="1.66667" fill="#DADADA" />
+              <circle cx="104" cy="16.3335" r="1.66667" fill="#DADADA" />
+              <circle cx="60.3333" cy="31.0001" r="1.66667" fill="#DADADA" />
+              <circle cx="104" cy="31.0001" r="1.66667" fill="#DADADA" />
+              <circle cx="60.3333" cy="45.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="104" cy="45.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="60.333" cy="60.3335" r="1.66667" fill="#DADADA" />
+              <circle cx="104" cy="60.3335" r="1.66667" fill="#DADADA" />
+              <circle cx="60.333" cy="88.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="104" cy="88.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="60.333" cy="117.667" r="1.66667" fill="#DADADA" />
+              <circle cx="104" cy="117.667" r="1.66667" fill="#DADADA" />
+              <circle cx="60.333" cy="74.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="104" cy="74.6668" r="1.66667" fill="#DADADA" />
+              <circle cx="60.333" cy="103" r="1.66667" fill="#DADADA" />
+              <circle cx="104" cy="103" r="1.66667" fill="#DADADA" />
+              <circle cx="60.333" cy="132" r="1.66667" fill="#DADADA" />
+              <circle cx="104" cy="132" r="1.66667" fill="#DADADA" />
+            </svg>
+            <img src="assets/images/about/scan.jpg" height="400px" width="450px" alt="scan" />
+          </div>
+        </div>
+        <div class="col-lg-6 col-12">
+          <div class="about-five-content">
+            <h6 class="small-title text-lg">Simple Guides</h6>
+            <h2 class="main-title fw-bold">Green Scan</h2>
+            <div class="about-five-tab">
+              <nav>
+                <div class="nav nav-tabs ali justify-content-center" id="nav-tab" role="tablist">
+                  <button class="nav-link active" id="nav-who-tab" data-bs-toggle="tab" data-bs-target="#nav-who"
+                    type="button" role="tab" aria-controls="nav-who" aria-selected="true">Follow these steps</button>
+                  <!-- <button class="nav-link" id="nav-vision-tab" data-bs-toggle="tab" data-bs-target="#nav-vision"
+                    type="button" role="tab" aria-controls="nav-vision" aria-selected="false">our Vision</button>
+                  <button class="nav-link" id="nav-history-tab" data-bs-toggle="tab" data-bs-target="#nav-history"
+                    type="button" role="tab" aria-controls="nav-history" aria-selected="false">our History</button> -->
+                </div>
+              </nav>
+              <div class="tab-content" id="nav-tabContent">
+                <div class="tab-pane fade show active" id="nav-who" role="tabpanel" aria-labelledby="nav-who-tab">
+                  <p>
+                    <li>Click the "Get Started" button.</li>
+                    <li>Upload a clear plant photo.</li>
+                    <li>Click the "Detect" button.</li>
+                    <li>Wait for the analysis to complete.</li>
+                    <li>Receive detailed information about the disease.</li>
+                    <li>Need Help? Find assistance options if required.</li>
+                    <li>Implement recommended treatments or consult experts.</li>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- container -->
+  </section>
+
+  <!--====== ABOUT FIVE PART ENDS ======-->
+
+  <!-- ===== about section start ===== -->
+  <section id="services" class="services-area services-eight">
+    <!--======  Start Section Title Five ======-->
+    <div class="section-title-five">
+      <div class="container">
+        <div class="row">
+          <div class="col-12">
+            <div class="content">
+              <h6>About</h6>
+              <h2 class="fw-bold">What This Does?</h2>
+              <p>
+                Our plant disease detection application utilizes advanced algorithms and machine learning to analyze
+                uploaded plant photos, quickly identifying diseases and providing detailed information to help farmers
+                take prompt action and protect their crops.
+              </p>
+            </div>
+          </div>
+        </div>
+        <!-- row -->
+      </div>
+      <!-- container -->
+    </div>
+    <!--======  End Section Title Five ======-->
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-4 col-md-6">
+          <div class="single-services">
+            <div class="service-icon">
+              <i class="lni lni-capsule"></i>
+            </div>
+            <div class="service-content">
+              <h4>Precision</h4>
+              <p>
+                Our advanced system, trained on a vast dataset of 80,000+ samples, accurately detects and diagnoses
+                plant diseases, ensuring precise insights for optimal crop protection.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+          <div class="single-services">
+            <div class="service-icon">
+              <i class="lni lni-bootstrap"></i>
+            </div>
+            <div class="service-content">
+              <h4>User-Friendly Interface</h4>
+              <p>
+                Our application features a user-friendly interface designed for ease of use, making it accessible and
+                convenient for farmers of all levels of technical expertise.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+          <div class="single-services">
+            <div class="service-icon">
+              <i class="lni lni-shortcode"></i>
+            </div>
+            <div class="service-content">
+              <h4>Scalability and Adaptability</h4>
+              <p>
+                Our system is built to handle large-scale operations, catering to the needs of individual farmers,
+                agricultural organizations, and research institutions alike.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+          <div class="single-services">
+            <div class="service-icon">
+              <i class="lni lni-dashboard"></i>
+            </div>
+            <div class="service-content">
+              <h4>Empowering Sustainable Farming</h4>
+              <p>
+                By accurately identifying plant diseases, we contribute to sustainable farming practices by minimizing
+                crop losses, reducing the need for excessive pesticide use, and promoting efficient resource
+                utilization.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+          <div class="single-services">
+            <div class="service-icon">
+              <i class="lni lni-layers"></i>
+            </div>
+            <div class="service-content">
+              <h4>Positive Impact on Crop Health</h4>
+              <p>
+                Our system plays a vital role in safeguarding crop health, optimizing yields, and ensuring food security
+                by equipping farmers with essential tools and knowledge for effective disease management.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+          <div class="single-services">
+            <div class="service-icon">
+              <i class="lni lni-reload"></i>
+            </div>
+            <div class="service-content">
+              <h4>Continuous Improvement</h4>
+              <p>
+                We are committed to ongoing research and development, continuously refining our algorithms and expanding
+                our dataset to enhance the accuracy and capabilities of our plant disease detection system.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- ===== about section end ===== -->
+
+
+  <!-- Start sample  Area -->
+  <section id="sample" class="pricing-area pricing-fourteen">
+    <!--======  Start Section Title Five ======-->
+    <div class="section-title-five">
+      <div class="container">
+        <div class="row">
+          <div class="col-12">
+            <div class="content">
+              <h6>Samples</h6>
+              <h2 class="fw-bold">Samples</h2>
+              <p>
+                Explore Our Plant Disease Detection in Action: Browse through our sample pictures below to witness how
+                our advanced system accurately identifies and diagnoses plant diseases. See the power of our technology
+                in action and discover how it can help protect your crops and optimize your farm's productivity.
+              </p>
+            </div>
+          </div>
+        </div>
+        <!-- row -->
+      </div>
+      <!-- container -->
+    </div>
+    <!--======  End Section Title Five ======-->
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-4 col-md-6 col-12">
+          <div class="pricing-style-fourteen">
+
+            <div class="light-rounded-buttons">
+              <a href="javascript:void(0)" class="btn primary-btn">
+                Sample 1
+              </a>
+            </div>
+            <img src="assets/teams/anish.jpg" alt="anish">
+
+
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6 col-12">
+          <div class="pricing-style-fourteen">
+
+            <div class="light-rounded-buttons">
+              <a href="javascript:void(0)" class="btn primary-btn">
+                Sample 2
+              </a>
+            </div>
+            <img src="assets/teams/anish.jpg" alt="anish">
+
+
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6 col-12">
+          <div class="pricing-style-fourteen">
+
+            <div class="light-rounded-buttons">
+              <a href="javascript:void(0)" class="btn primary-btn">
+                Sample 3
+              </a>
+            </div>
+            <img src="assets/teams/anish.jpg" alt="anish">
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+    </div>
+  </section>
+  <!--/ End sample  Area -->
+
+  <!-- Start teams Area -->
+  <div id="teams" class="latest-news-area section">
+    <!--======  Start Section Title Five ======-->
+    <div class="section-title-five">
+      <div class="container">
+        <div class="row">
+          <div class="col-12">
+            <div class="content">
+              <h6>Teams</h6>
+              <h2 class="fw-bold">Meet Our Teams</h2>
+              <p>
+                Our Dev Team: Meet our talented developers who are passionate about creating innovative solutions. With
+                expertise in data science and software engineering, our team has developed a state-of-the-art plant
+                disease detection system that delivers accurate results and empowers farmers. Together, we are committed
+                to advancing technology for the benefit of agriculture
+              </p>
+            </div>
+          </div>
+        </div>
+        <!-- row -->
+      </div>
+      <!-- container -->
+    </div>
+    <!--======  End Section Title Five ======-->
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-4 col-md-6 col-12">
+          <!-- team 1 -->
+          <div class="single-news">
+            <div class="image">
+              <a href="javascript:void(0)"><img class="thumb" src="assets/teams/sushan.jpg" alt="Blog" /></a>
+              <div class="meta-details">
+                <img class="thumb" src="assets/teams/sushan.jpg" alt="Author" />
+                <span>Sushan Niroula</span>
+              </div>
+            </div>
+            <div class="content-body">
+              <h4 class="title">
+                <a href="javascript:void(0)"> Front-End and Research </a>
+              </h4>
+            </div>
+          </div>
+          <!-- End team1 -->
+        </div>
+        <div class="col-lg-4 col-md-6 col-12">
+          <!-- team 2 -->
+          <div class="single-news">
+            <div class="image">
+              <a href="javascript:void(0)"><img class="thumb" src="assets/teams/paras.jpg" alt="Blog" /></a>
+              <div class="meta-details">
+                <img class="thumb" src="assets/teams/paras.jpg" alt="Author" />
+                <span>Paras Giri</span>
+              </div>
+            </div>
+            <div class="content-body">
+              <h4 class="title">
+                <a href="javascript:void(0)">
+                  Front-End And Presentation
+                </a>
+              </h4>
+            </div>
+          </div>
+          <!-- End team 2 -->
+        </div>
+        <div class="col-lg-4 col-md-6 col-12">
+          <!-- team 3 -->
+          <div class="single-news">
+            <div class="image">
+              <a href="javascript:void(0)"><img class="thumb" src="assets/teams/ishor.jpg" alt="Blog" /></a>
+              <div class="meta-details">
+                <img class="thumb" src="assets/teams/ishor.jpg" alt="Author" />
+                <span>Ishor Acharya</span>
+              </div>
+            </div>
+            <div class="content-body">
+              <h4 class="title">
+                <a href="javascript:void(0)">
+                  Front-End And Manager
+                </a>
+              </h4>
+            </div>
+          </div>
+          <!-- End team 3 -->
+        </div>
+        <div class="col-lg-4 col-md-6 col-12">
+          <!-- team 4 -->
+          <div class="single-news">
+            <div class="image">
+              <a href="javascript:void(0)"><img class="thumb" src="assets/teams/anish.jpg" alt="Blog" /></a>
+              <div class="meta-details">
+                <img class="thumb" src="assets/teams/anish.jpg" alt="Author" />
+                <span>Anup Adhikari</span>
+              </div>
+            </div>
+            <div class="content-body">
+              <h4 class="title">
+                <a href="javascript:void(0)">
+                  Research And Documentation
+                </a>
+              </h4>
+            </div>
+          </div>
+          <!-- End team 4 -->
+        </div>
+        <div class="col-lg-4 col-md-6 col-12">
+          <!-- team 5 -->
+          <div class="single-news">
+            <div class="image">
+              <a href="javascript:void(0)"><img class="thumb" src="assets/teams/drishya.jpg" alt="Blog" /></a>
+              <div class="meta-details">
+                <img class="thumb" src="assets/teams/drishya.jpg" alt="Author" />
+                <span>Drishya Karki</span>
+              </div>
+            </div>
+            <div class="content-body">
+              <h4 class="title">
+                <a href="javascript:void(0)">
+                  Python And Machine Learning
+                </a>
+              </h4>
+            </div>
+          </div>
+          <!-- End team 5 -->
+        </div>
+        <div class="col-lg-4 col-md-6 col-12">
+          <!-- team 6 -->
+          <div class="single-news">
+            <div class="image">
+              <a href="javascript:void(0)"><img class="thumb" src="assets/teams/srizan.jpg" alt="Blog" /></a>
+              <div class="meta-details">
+                <img class="thumb" src="assets/teams/srizan.jpg" alt="Author" />
+                <span>Srizan Bhattarai</span>
+              </div>
+            </div>
+            <div class="content-body">
+              <h4 class="title">
+                <a href="javascript:void(0)">
+                  Documentation and Presentation
+                </a>
+              </h4>
+            </div>
+          </div>
+          <!-- End team 6 -->
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- End team section -->
+
+  <!-- Start report Area -->
+  <div id="report" class="brand-area section">
+    <!--======  Start Section Title Five ======-->
+    <div class="section-title-five">
+      <div class="container">
+        <div class="row">
+          <div class="col-12">
+            <div class="content">
+              <h6>Report</h6>
+              <h2 class="fw-bold">Report Us and Give Feedback</h2>
+              <p>
+                Have feedback or encountered an issue? We value your input! Use this section to report any concerns,
+                provide feedback, or seek assistance. Our team is dedicated to addressing your queries promptly and
+                continuously improving our plant disease detection system to better serve your needs.
+              </p>
+            </div>
+          </div>
+        </div>
+        <!-- row -->
+      </div>
+      <!-- container -->
+    </div>
+    <!--======  End Section Title Five ======-->
+
+
+    <!-- ========================= contact-section start ========================= -->
+    <section id="contact" class="contact-section">
+      <div class="container">
+        <div class="row">
+          <div class="col-xl-4">
+            <div class="contact-item-wrapper">
+              <div class="row">
+                <div class="col-12 col-md-6 col-xl-12">
+                  <div class="contact-item">
+                    <div class="contact-icon">
+                      <i class="lni lni-phone"></i>
+                    </div>
+                    <div class="contact-content">
+                      <h4>Contact</h4>
+                      <p>021-12345</p>
+                      <p>report@pdd.com</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-6 col-xl-12">
+                  <div class="contact-item">
+                    <div class="contact-icon">
+                      <i class="lni lni-map-marker"></i>
+                    </div>
+                    <div class="contact-content">
+                      <h4>Address</h4>
+                      <p>Urlabari-3, Mangalbare</p>
+                      <p>Nepal</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-xl-8">
+            <div class="contact-form-wrapper">
+              <div class="row">
+                <div class="col-xl-10 col-lg-8 mx-auto">
+                  <div class="section-title text-center">
+                    <span> Report and Feedback </span>
+                    <p>
+                      We value your input! Use this section to report any concerns, provide feedback, or seek
+                      assistance.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <form action="#" class="contact-form">
+                <div class="row">
+                  <div class="col-md-6">
+                    <input type="text" name="name" id="name" placeholder="Name" required />
+                  </div>
+                  <div class="col-md-6">
+                    <input type="email" name="email" id="email" placeholder="Email" required />
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6">
+                    <input type="text" name="phone" id="phone" placeholder="Phone" required />
+                  </div>
+                  <div class="col-md-6">
+                    <input type="text" name="subject" id="email" placeholder="Subject" required />
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12">
+                    <textarea name="message" id="message" placeholder="Type Message" rows="5"></textarea>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12">
+                    <div class="button text-center rounded-buttons">
+                      <button type="submit" class="btn primary-btn rounded-full">
+                        Send Message
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- ========================= contact-section end ========================= -->
+    <!-- End report section -->
+    <a href="#" class="scroll-top btn-hover">
+      <i class="lni lni-chevron-up"></i>
+    </a>
+
+    <!--====== js ======-->
+    <script src="assets/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/glightbox.min.js"></script>
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/tiny-slider.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+    <script>
+
+      //===== close navbar-collapse when a  clicked
+      let navbarTogglerNine = document.querySelector(
+        ".navbar-nine .navbar-toggler"
+      );
+      navbarTogglerNine.addEventListener("click", function () {
+        navbarTogglerNine.classList.toggle("active");
+      });
+
+      // ==== left sidebar toggle
+      let sidebarLeft = document.querySelector(".sidebar-left");
+      let overlayLeft = document.querySelector(".overlay-left");
+      let sidebarClose = document.querySelector(".sidebar-close .close");
+
+      overlayLeft.addEventListener("click", function () {
+        sidebarLeft.classList.toggle("open");
+        overlayLeft.classList.toggle("open");
+      });
+      sidebarClose.addEventListener("click", function () {
+        sidebarLeft.classList.remove("open");
+        overlayLeft.classList.remove("open");
+      });
+
+      // ===== navbar nine sideMenu
+      let sideMenuLeftNine = document.querySelector(".navbar-nine .menu-bar");
+
+      sideMenuLeftNine.addEventListener("click", function () {
+        sidebarLeft.classList.add("open");
+        overlayLeft.classList.add("open");
+      });
+
+      //========= glightbox
+      GLightbox({
+        'href': 'https://www.youtube.com/watch?v=r44RKWyfcFw&fbclid=IwAR21beSJORalzmzokxDRcGfkZA1AtRTE__l5N4r09HcGS5Y6vOluyouM9EM',
+        'type': 'video',
+        'source': 'youtube', //vimeo, youtube or local
+        'width': 900,
+        'autoplayVideos': true,
+      });
+
+    </script>
+    <script>
+      jQuery(document).ready(function ($) {
+        //open popup
+        $('.popup-trigger').on('click', function (event) {
+          event.preventDefault();
+          $('.popup').addClass('is-visible');
+
+          var contentWidth = $('#popup-content').contents().find('body').width();
+          $('.popup-container').width(contentWidth);
+        });
+
+        //close popup
+        $('.popup').on('click', function (event) {
+          if ($(event.target).is('.popup-close') || $(event.target).is('.popup')) {
+            event.preventDefault();
+            $(this).removeClass('is-visible');
+          }
+        });
+        //close popup when clicking the esc keyboard button
+        $(document).keyup(function (event) {
+          if (event.which == '27') {
+            $('.popup').removeClass('is-visible');
+          }
+        });
+      });
+    </script>
+    <script type="text/javascript">
+      var droppedFiles = false;
+      var fileName = "";
+      var $dropzone = $(".dropzone");
+      var $button = $(".upload-btn");
+      var uploading = false;
+      var $syncing = $(".syncing");
+      var $done = $(".done");
+      var $bar = $(".bar");
+      var timeOut;
+
+      $dropzone
+        .on("drag dragstart dragend dragover dragenter dragleave drop", function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+        })
+        .on("dragover dragenter", function () {
+          $dropzone.addClass("is-dragover");
+        })
+        .on("dragleave dragend drop", function () {
+          $dropzone.removeClass("is-dragover");
+        })
+        .on("drop", function (e) {
+          droppedFiles = e.originalEvent.dataTransfer.files;
+          fileName = droppedFiles[0]["name"];
+          $(".filename").html(fileName);
+          $(".dropzone .upload").hide();
+        });
+
+      $button.bind("click", function () {
+        startUpload();
+      });
+
+      $("input:file").change(function () {
+        fileName = $(this)[0].files[0].name;
+        $(".filename").html(fileName);
+        $(".dropzone .upload").hide();
+      });
+
+      function startUpload() {
+        if (!uploading && fileName != "") {
+          uploading = true;
+          $button.html("Uploading...");
+          $dropzone.fadeOut();
+          $syncing.addClass("active");
+          $done.addClass("active");
+          $bar.addClass("active");
+          timeoutID = window.setTimeout(showDone, 3200);
+        }
+      }
+
+      function showDone() {
+        $button.html("Detect");
+      }
+
+    </script>
+</body>
+
+</html>
